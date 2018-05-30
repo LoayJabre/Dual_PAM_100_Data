@@ -4,4 +4,4 @@ author: "Loay Jabre"
 date: "May 30, 2018"
 output: html_document
 ---
-lalala
+This is the first commit to this. Just making sure the github is working
