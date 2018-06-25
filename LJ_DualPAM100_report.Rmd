@@ -2,6 +2,8 @@
 title: "LJ_DualPAM100"
 author: "Loay Jabre"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 This is a trial with false data, just to develop some code for the Fv/Fm data that will be generated, and to figure out the best way to organize the spreadsheet 
@@ -30,76 +32,46 @@ dir()
 
 ```{r message=FALSE, warning=FALSE, include=FALSE, results='hide'}
 df = read.csv("LJ_PAMexp_v1.csv", header = TRUE, sep =",")
+
+
+
+
+#temp3 = cbind(temp1, temperature2=temp2$temperature2)
+
+df2 = melt(data = df, id.vars = "SPintensity_lvl", measure.vars = c("fvfm1", "fvfm2", "fvfm3"))
+
+dfgain = melt(data = df, id.vars = "gain_volts", measure.vars = c("fvfm1", "fvfm2", "fvfm3"))
+
+dfsplength = melt(data = df, id.vars = "SPlength_ms", measure.vars = c("fvfm1", "fvfm2", "fvfm3"))
+
+dfgain = melt(data = df, id.vars = c("gain_volts", "SPintensity_lvl"), measure.vars = c("fvfm1", "fvfm2", "fvfm3"))
+
+
+
+names(df2)= c("SPintensity", "measurement", "fvfm")
+names(dfgain)= c("gain", "SP", "measurement", "fvfm")
+names(dfsplength)= c("splength", "measurement", "fvfm")
+
 ```
 
 
 
 ```{r include=FALSE}
-#This creates a new dataset called temp, with a common timeline and the two temperatures. 
+#this is a function to plot the data
 
-df1 = melt(data = df, id.vars = "time", measure.vars = c("temperature1", "temperature2"))
-
-names(temp)= c("time", "logger", "temperature")
-
-```
-
-
-
-
-
-
-
-
-
-
-
-```{r}
-#creats a new column (meanfvfm), calculated the mean of the three fvfms and if there is an NA value.. I dunno.. I gotta figure out the na.rm = true 
-df$meanfvfm = rowMeans(df[14:16], na.rm = TRUE)
-```
-
-
-
-
-
-
-
-
-
-
- 
-```{r echo=FALSE}
-
-ggplot(data = temp3, aes(x=temperature1))+
-geom_histogram(bins=30)+
-theme_bw()+
-xlab ("Temperature (C)")+
-  ylab ("Frequency")+
-  coord_cartesian(xlim=c(0,3))+
-  ggtitle("Air Temperature")+
- theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5))         
-  
-
-ggplot(temp3, aes(x=time, y=temperature1))+
-  #the following line x=time assigns x and y axis labels
-  geom_line()+
-  coord_cartesian(ylim =c(0,3)) +
-  scale_x_datetime(date_breaks = "1 hour",  labels = date_format("%m/%d - %H:%M")) +
-  #theme_bw or _ whatever are just preset themes to help with making the graph look a certain way
-  xlab ("Time")+
-  ylab ("Temperature (C)")+
-ggtitle("Air Temperature")+
- theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5))+
-  theme(axis.text.x = element_text(angle = 25, vjust = 1.0, hjust = 1.0)) 
-  
-  
-#another way to play there "theme". Basically you control the way the gram looks
-  #theme (panel.grid = element_blank(),
-       # panel.background = element_rect(fill = "white"),
-       # panel.border = element_rect(colour = "black", fill = NA,size = 0.2))
-```
+ggplot (dfgain, aes(x=gain, y=fvfm))+
+geom_point( color = dfgain$SP)+
+xlab ("Gain")+
+  ylab ("Fv/Fm")+
+  geom_jitter(width = 0.05)+
+  scale_x_continuous(breaks = c(0.05, 0.3, 0.5))+
+  #coord_cartesian(xlim=c(0, 0.6), break = (0.1))+
+  coord_cartesian(ylim =c(0.5,0.71))+
+  ggtitle("Gain")+
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
 
 ```
+
+
 
